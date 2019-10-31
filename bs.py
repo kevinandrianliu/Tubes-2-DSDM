@@ -61,19 +61,22 @@ def crawl(cars, link, headers):
             cars.append(dict_items)
 
 cars = []
+counter = 0
 while len(cars) < 50000:
     # Add header to smooth crawling using Mozilla
-    headers = requests.utils.default_headers()
-    headers.update({ 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
+    if counter == 0:
+        headers = requests.utils.default_headers()
+        headers.update({ 'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
 
-    # Add options to Chrome
-    options = webdriver.ChromeOptions()
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument('--incognito')
-    options.add_argument('--headless')
-    driver = webdriver.Chrome(options=options)
+        # Add options to Chrome
+        options = webdriver.ChromeOptions()
+        options.add_argument('--ignore-certificate-errors')
+        options.add_argument('--incognito')
+        options.add_argument('--headless')
+        driver = webdriver.Chrome(options=options)
 
-    driver.get('https://www.olx.co.id/mobil-bekas_c198')
+        driver.get('https://www.olx.co.id/mobil-bekas_c198')
+        
     more_buttons = driver.find_element_by_xpath('//button[contains(@class, "rui-3sH3b") and contains(@class, "rui-23TLR") and contains(@class, "rui-1zK8h")]')
 
     olx_cars = len(driver.find_elements_by_class_name("EIR5N"))
@@ -103,6 +106,8 @@ while len(cars) < 50000:
         crawl(cars, link, headers)
 
     print(len(cars))
+    driver.refresh()
+    counter += 1
 
 with open("car.json", "w") as file:
     json.dump(cars, file)
